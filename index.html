@@ -9,1369 +9,697 @@
     />
     <title>$NOCT - The Night Has a Token</title>
     <link rel="icon" href="https://fav.farm/⚡" />
-    <script
-      src="https://kit.fontawesome.com/a076d05399.js"
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              mono: ["JetBrains Mono", "monospace"],
+            },
+            animation: {
+              float: "float 6s ease-in-out infinite",
+              "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+              "fade-in-up": "fadeInUp 0.8s ease-out forwards",
+              "slide-down": "slideDown 0.3s ease-out forwards",
+            },
+            keyframes: {
+              float: {
+                "0%, 100%": { transform: "translateY(0px)" },
+                "50%": { transform: "translateY(-20px)" },
+              },
+              fadeInUp: {
+                "0%": { opacity: "0", transform: "translateY(30px)" },
+                "100%": { opacity: "1", transform: "translateY(0)" },
+              },
+              slideDown: {
+                "0%": { opacity: "0", transform: "translateY(-10px)" },
+                "100%": { opacity: "1", transform: "translateY(0)" },
+              },
+            },
+          },
+        },
+      };
+    </script>
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
       html {
         scroll-behavior: smooth;
-        overflow-x: hidden;
       }
 
       body {
-        background: #000;
-        font-family: "Orbitron", monospace;
-        color: #fff;
-        overflow-x: hidden;
-        cursor: none;
-        position: relative;
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+        font-family: "Inter", sans-serif;
       }
 
-      /* Enhanced Custom Cursor */
-      .cursor {
-        position: fixed;
-        width: 30px;
-        height: 30px;
-        background: radial-gradient(
-          circle,
-          #ccff00 0%,
-          #00ff88 50%,
-          transparent 70%
-        );
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 9999;
-        mix-blend-mode: screen;
-        transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        box-shadow: 0 0 20px #ccff00, 0 0 40px #ccff00, 0 0 60px #ccff00;
-      }
-
-      .cursor-trail {
-        position: fixed;
-        width: 8px;
-        height: 8px;
-        background: linear-gradient(45deg, #ccff00, #00ff88);
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 9998;
-        opacity: 0.6;
-        box-shadow: 0 0 10px #ccff00;
-      }
-
-      /* 3D Background Canvas */
-      #threejs-bg {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        z-index: -2;
-      }
-
-      /* Enhanced Matrix Background */
-      .matrix-bg {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        z-index: -1;
-        overflow: hidden;
-        background: radial-gradient(
-            circle at 25% 25%,
-            rgba(204, 255, 0, 0.08) 0%,
-            transparent 50%
-          ),
-          radial-gradient(
-            circle at 75% 75%,
-            rgba(0, 255, 136, 0.06) 0%,
-            transparent 50%
-          ),
-          radial-gradient(
-            circle at 50% 50%,
-            rgba(204, 255, 0, 0.04) 0%,
-            transparent 70%
-          ),
-          linear-gradient(45deg, rgba(0, 0, 0, 0.95), rgba(20, 20, 20, 0.9));
-        animation: matrix-pulse 8s ease-in-out infinite alternate;
-      }
-
-      @keyframes matrix-pulse {
-        0% {
-          opacity: 0.7;
-          transform: scale(1);
-        }
-        50% {
-          opacity: 1;
-          transform: scale(1.02);
-        }
-        100% {
-          opacity: 0.8;
-          transform: scale(1);
-        }
-      }
-
-      /* Enhanced Glitch Effects */
-      .glitch {
-        position: relative;
-        animation: glitch-master 3s infinite;
-      }
-
-      .glitch::before,
-      .glitch::after {
-        content: attr(data-text);
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-      }
-
-      .glitch::before {
-        animation: glitch-1 0.8s infinite;
-        color: #ff0040;
-        z-index: -1;
-        text-shadow: 2px 0 #ff0040;
-      }
-
-      .glitch::after {
-        animation: glitch-2 0.8s infinite;
-        color: #00ffff;
-        z-index: -2;
-        text-shadow: -2px 0 #00ffff;
-      }
-
-      @keyframes glitch-master {
-        0%,
-        100% {
-          transform: translate(0);
-          filter: hue-rotate(0deg);
-        }
-        20% {
-          transform: translate(-3px, 3px);
-          filter: hue-rotate(90deg);
-        }
-        40% {
-          transform: translate(-3px, -3px);
-          filter: hue-rotate(180deg);
-        }
-        60% {
-          transform: translate(3px, 3px);
-          filter: hue-rotate(270deg);
-        }
-        80% {
-          transform: translate(3px, -3px);
-          filter: hue-rotate(360deg);
-        }
-      }
-
-      @keyframes glitch-1 {
-        0%,
-        100% {
-          transform: translate(0);
-          opacity: 1;
-        }
-        10% {
-          transform: translate(-5px, -2px);
-          opacity: 0.8;
-        }
-        20% {
-          transform: translate(3px, 4px);
-          opacity: 0.6;
-        }
-        30% {
-          transform: translate(-2px, 1px);
-          opacity: 0.9;
-        }
-        40% {
-          transform: translate(4px, -3px);
-          opacity: 0.7;
-        }
-        50% {
-          transform: translate(-3px, 2px);
-          opacity: 0.5;
-        }
-      }
-
-      @keyframes glitch-2 {
-        0%,
-        100% {
-          transform: translate(0);
-          opacity: 1;
-        }
-        15% {
-          transform: translate(4px, -4px);
-          opacity: 0.7;
-        }
-        30% {
-          transform: translate(-3px, 3px);
-          opacity: 0.8;
-        }
-        45% {
-          transform: translate(2px, -2px);
-          opacity: 0.6;
-        }
-        60% {
-          transform: translate(-4px, 4px);
-          opacity: 0.9;
-        }
-        75% {
-          transform: translate(3px, -1px);
-          opacity: 0.5;
-        }
-      }
-
-      /* Holographic Neon Effects */
-      .neon-text {
-        color: #ccff00;
-        text-shadow: 0 0 5px #ccff00, 0 0 10px #ccff00, 0 0 15px #ccff00,
-          0 0 20px #ccff00, 0 0 30px #ccff00, 0 0 40px #ccff00;
-        animation: neon-flicker-enhanced 2s infinite alternate;
-        filter: brightness(1.2) contrast(1.3);
-      }
-
-      @keyframes neon-flicker-enhanced {
-        0%,
-        100% {
-          opacity: 1;
-          filter: brightness(1.2) contrast(1.3) saturate(1.2);
-        }
-        25% {
-          opacity: 0.9;
-          filter: brightness(1.4) contrast(1.5) saturate(1.4);
-        }
-        50% {
-          opacity: 0.8;
-          filter: brightness(1.1) contrast(1.2) saturate(1.1);
-        }
-        75% {
-          opacity: 0.95;
-          filter: brightness(1.3) contrast(1.4) saturate(1.3);
-        }
-      }
-
-      /* Hero Section with Enhanced Effects */
-      .hero {
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-        background: radial-gradient(
-            ellipse at center,
-            rgba(204, 255, 0, 0.15) 0%,
-            transparent 70%
-          ),
-          radial-gradient(
-            ellipse at 20% 80%,
-            rgba(0, 255, 136, 0.1) 0%,
-            transparent 50%
-          );
-      }
-
-      .hero-title {
-        font-size: clamp(2.5rem, 10vw, 8rem);
-        font-weight: 900;
-        margin-bottom: 1rem;
-        letter-spacing: 0.15em;
-        position: relative;
-        background: linear-gradient(45deg, #ccff00, #00ff88, #ccff00);
-        background-size: 200% 200%;
-        background-clip: text;
+      .gradient-text {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b, #d97706);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        animation: gradient-shift 4s ease-in-out infinite,
-          title-float 6s ease-in-out infinite;
+        background-clip: text;
       }
 
-      @keyframes gradient-shift {
-        0%,
-        100% {
-          background-position: 0% 50%;
-        }
-        50% {
-          background-position: 100% 50%;
-        }
+      .glass-effect {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
       }
 
-      @keyframes title-float {
-        0%,
-        100% {
-          transform: translateY(0px) rotateX(0deg);
-        }
-        50% {
-          transform: translateY(-10px) rotateX(5deg);
-        }
+      .hover-lift {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
-      .hero-subtitle {
-        font-size: clamp(1.2rem, 5vw, 2.5rem);
-        margin-bottom: 3rem;
-        opacity: 0.9;
-        font-family: "JetBrains Mono", monospace;
-        text-shadow: 0 0 20px rgba(204, 255, 0, 0.5);
-        animation: subtitle-glow 3s ease-in-out infinite alternate;
+      .hover-lift:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(251, 191, 36, 0.15);
       }
 
-      @keyframes subtitle-glow {
-        0% {
-          opacity: 0.9;
-          transform: scale(1);
-        }
-        100% {
-          opacity: 1;
-          transform: scale(1.02);
-        }
-      }
-
-      /* Enhanced Floating Particles */
       .particle {
         position: absolute;
-        background: linear-gradient(45deg, #ccff00, #00ff88);
         border-radius: 50%;
-        pointer-events: none;
-        animation: float-enhanced 8s ease-in-out infinite;
-        box-shadow: 0 0 20px currentColor;
+        background: linear-gradient(45deg, #fbbf24, #f59e0b);
+        opacity: 0.1;
+        animation: float 8s infinite ease-in-out;
       }
 
-      @keyframes float-enhanced {
-        0%,
-        100% {
-          transform: translateY(0px) rotate(0deg) scale(1);
-          opacity: 0;
-        }
-        10% {
-          opacity: 1;
-        }
-        25% {
-          transform: translateY(-30px) rotate(90deg) scale(1.2);
-          opacity: 0.8;
-        }
-        50% {
-          transform: translateY(-60px) rotate(180deg) scale(0.8);
-          opacity: 0.6;
-        }
-        75% {
-          transform: translateY(-30px) rotate(270deg) scale(1.1);
-          opacity: 0.9;
-        }
-        90% {
-          opacity: 1;
-        }
-      }
-
-      /* Futuristic Buttons */
-      .neon-button {
-        display: inline-block;
-        padding: 18px 40px;
-        margin: 15px;
-        background: linear-gradient(45deg, #ccff00, #00ff88, #ccff00);
-        background-size: 200% 200%;
-        color: #000;
-        text-decoration: none;
-        border-radius: 50px;
-        font-weight: bold;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        position: relative;
-        overflow: hidden;
-        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        box-shadow: 0 0 30px rgba(204, 255, 0, 0.4),
-          0 0 60px rgba(204, 255, 0, 0.2),
-          inset 0 0 20px rgba(255, 255, 255, 0.1);
-        animation: button-pulse 2s ease-in-out infinite;
-        border: 2px solid transparent;
-        background-clip: padding-box;
-      }
-
-      @keyframes button-pulse {
-        0%,
-        100% {
-          background-position: 0% 50%;
-          box-shadow: 0 0 30px rgba(204, 255, 0, 0.4),
-            0 0 60px rgba(204, 255, 0, 0.2);
-        }
-        50% {
-          background-position: 100% 50%;
-          box-shadow: 0 0 40px rgba(204, 255, 0, 0.6),
-            0 0 80px rgba(204, 255, 0, 0.3);
-        }
-      }
-
-      .neon-button::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.6),
-          transparent
-        );
-        transition: left 0.6s ease;
-      }
-
-      .neon-button:hover::before {
-        left: 100%;
-      }
-
-      .neon-button:hover {
-        transform: translateY(-5px) scale(1.05);
-        box-shadow: 0 15px 40px rgba(204, 255, 0, 0.6),
-          0 0 80px rgba(204, 255, 0, 0.4);
-        filter: brightness(1.2);
-      }
-
-      .outline-button {
-        display: inline-block;
-        padding: 18px 40px;
-        margin: 15px;
-        background: transparent;
-        color: #ccff00;
-        text-decoration: none;
-        border: 3px solid #ccff00;
-        border-radius: 50px;
-        font-weight: bold;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 0 20px rgba(204, 255, 0, 0.2),
-          inset 0 0 20px rgba(204, 255, 0, 0.05);
-      }
-
-      .outline-button::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 0;
-        height: 100%;
-        background: linear-gradient(45deg, #ccff00, #00ff88);
-        transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        z-index: -1;
-      }
-
-      .outline-button:hover::before {
-        width: 100%;
-      }
-
-      .outline-button:hover {
-        color: #000;
-        transform: translateY(-5px) scale(1.05);
-        border-color: #00ff88;
-        box-shadow: 0 15px 40px rgba(204, 255, 0, 0.4),
-          0 0 60px rgba(204, 255, 0, 0.3);
-      }
-
-      /* Holographic Cards */
-      .card {
-        background: linear-gradient(
-          135deg,
-          rgba(204, 255, 0, 0.15),
-          rgba(0, 255, 136, 0.1),
-          rgba(0, 0, 0, 0.9)
-        );
-        border: 2px solid transparent;
-        border-radius: 25px;
-        padding: 2.5rem;
-        backdrop-filter: blur(15px) saturate(1.5);
-        transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 10px 30px rgba(204, 255, 0, 0.1),
-          inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        background-clip: padding-box;
-      }
-
-      .card::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-          45deg,
-          transparent,
-          rgba(204, 255, 0, 0.2),
-          rgba(0, 255, 136, 0.15),
-          transparent
-        );
-        transform: translateX(-100%) rotate(45deg);
-        transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      }
-
-      .card:hover::before {
-        transform: translateX(100%) rotate(45deg);
-      }
-
-      .card::after {
-        content: "";
-        position: absolute;
-        top: -2px;
-        left: -2px;
-        right: -2px;
-        bottom: -2px;
-        background: linear-gradient(45deg, #ccff00, #00ff88, #ccff00);
-        border-radius: 25px;
-        z-index: -1;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-      }
-
-      .card:hover::after {
-        opacity: 1;
-      }
-
-      .card:hover {
-        transform: translateY(-15px) rotateX(5deg);
-        box-shadow: 0 25px 50px rgba(204, 255, 0, 0.3),
-          0 0 80px rgba(204, 255, 0, 0.2);
-        backdrop-filter: blur(20px) saturate(2);
-      }
-
-      .card-icon {
-        font-size: 4rem;
-        color: #ccff00;
-        margin-bottom: 1.5rem;
-        animation: icon-float 3s ease-in-out infinite;
-        filter: drop-shadow(0 0 20px #ccff00);
-      }
-
-      @keyframes icon-float {
-        0%,
-        100% {
-          transform: translateY(0px) rotateY(0deg);
-        }
-        33% {
-          transform: translateY(-8px) rotateY(120deg);
-        }
-        66% {
-          transform: translateY(-4px) rotateY(240deg);
-        }
-      }
-
-      /* Enhanced Sections */
-      .section {
-        padding: 6rem 2rem;
-        position: relative;
-      }
-
-      .section-title {
-        font-size: clamp(2.5rem, 8vw, 5rem);
-        font-weight: 900;
-        text-align: center;
-        margin-bottom: 4rem;
-        letter-spacing: 0.15em;
-        background: linear-gradient(45deg, #ccff00, #00ff88, #ccff00);
-        background-size: 200% 200%;
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: gradient-shift 3s ease-in-out infinite;
-        position: relative;
-      }
-
-      .section-title::after {
-        content: "";
-        position: absolute;
-        bottom: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100px;
-        height: 3px;
-        background: linear-gradient(90deg, transparent, #ccff00, transparent);
-        border-radius: 2px;
-      }
-
-      /* Enhanced Roadmap */
-      .roadmap-item {
-        background: rgba(0, 0, 0, 0.8);
-        border-left: 5px solid #ccff00;
-        padding: 2.5rem;
-        margin: 3rem 0;
-        border-radius: 0 25px 25px 0;
-        position: relative;
-        transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        backdrop-filter: blur(10px);
-        box-shadow: 0 10px 30px rgba(204, 255, 0, 0.1),
-          inset 0 1px 0 rgba(255, 255, 255, 0.05);
-      }
-
-      .roadmap-item::before {
-        content: "";
-        position: absolute;
-        left: -12px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 24px;
-        height: 24px;
-        background: radial-gradient(circle, #ccff00, #00ff88);
-        border-radius: 50%;
-        box-shadow: 0 0 30px #ccff00, 0 0 60px rgba(204, 255, 0, 0.5);
-        animation: roadmap-pulse 2s ease-in-out infinite;
-      }
-
-      @keyframes roadmap-pulse {
-        0%,
-        100% {
-          transform: translateY(-50%) scale(1);
-          box-shadow: 0 0 30px #ccff00, 0 0 60px rgba(204, 255, 0, 0.5);
-        }
-        50% {
-          transform: translateY(-50%) scale(1.2);
-          box-shadow: 0 0 40px #ccff00, 0 0 80px rgba(204, 255, 0, 0.7);
-        }
-      }
-
-      .roadmap-item:hover {
-        background: rgba(204, 255, 0, 0.1);
-        transform: translateX(30px) scale(1.02);
-        border-left-color: #00ff88;
-        box-shadow: 0 20px 40px rgba(204, 255, 0, 0.2),
-          inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      }
-
-      /* Enhanced Social Links */
-      .social-link {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 100px;
-        height: 100px;
-        background: rgba(204, 255, 0, 0.1);
-        border: 3px solid #ccff00;
-        border-radius: 50%;
-        color: #ccff00;
-        font-size: 2.5rem;
-        text-decoration: none;
-        margin: 1.5rem;
-        transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 0 30px rgba(204, 255, 0, 0.2),
-          inset 0 0 30px rgba(204, 255, 0, 0.05);
-      }
-
-      .social-link::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: radial-gradient(circle, #ccff00, #00ff88);
-        border-radius: 50%;
-        transform: scale(0);
-        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        z-index: -1;
-      }
-
-      .social-link:hover::before {
-        transform: scale(1);
-      }
-
-      .social-link:hover {
-        color: #000;
-        transform: translateY(-15px) rotateY(360deg) scale(1.1);
-        box-shadow: 0 25px 50px rgba(204, 255, 0, 0.4),
-          0 0 80px rgba(204, 255, 0, 0.3);
-        border-color: #00ff88;
-      }
-
-      /* Grid Layout */
-      .grid {
-        display: grid;
-        gap: 3rem;
-        max-width: 1400px;
-        margin: 0 auto;
-      }
-
-      .grid-3 {
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      }
-
-      /* Enhanced Scroll Indicators */
-      .scroll-indicator {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 6px;
-        background: rgba(204, 255, 0, 0.1);
-        z-index: 1000;
-        backdrop-filter: blur(10px);
-      }
-
-      .scroll-progress {
-        height: 100%;
-        background: linear-gradient(90deg, #ccff00, #00ff88, #ccff00);
-        width: 0%;
-        transition: width 0.1s ease;
-        box-shadow: 0 0 20px #ccff00;
-      }
-
-      /* Enhanced Loading Animation */
-      .loading {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: radial-gradient(
-          ellipse at center,
-          rgba(204, 255, 0, 0.1) 0%,
-          #000 70%
-        );
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        z-index: 10000;
-        transition: opacity 0.8s ease;
-      }
-
-      .loading-text {
-        font-size: 2.5rem;
-        color: #ccff00;
-        animation: loading-enhanced 1.5s ease-in-out infinite;
-        text-shadow: 0 0 30px #ccff00;
-        margin-bottom: 2rem;
-      }
-
-      .loading-bar {
-        width: 300px;
+      .particle:nth-child(1) {
+        width: 4px;
         height: 4px;
-        background: rgba(204, 255, 0, 0.2);
-        border-radius: 2px;
-        overflow: hidden;
+        top: 20%;
+        left: 20%;
+        animation-delay: 0s;
+      }
+      .particle:nth-child(2) {
+        width: 6px;
+        height: 6px;
+        top: 60%;
+        left: 80%;
+        animation-delay: 2s;
+      }
+      .particle:nth-child(3) {
+        width: 3px;
+        height: 3px;
+        top: 80%;
+        left: 30%;
+        animation-delay: 4s;
+      }
+      .particle:nth-child(4) {
+        width: 5px;
+        height: 5px;
+        top: 30%;
+        left: 70%;
+        animation-delay: 6s;
       }
 
-      .loading-progress {
-        height: 100%;
-        background: linear-gradient(90deg, #ccff00, #00ff88);
-        width: 0%;
-        animation: loading-progress 3s ease-in-out forwards;
-        box-shadow: 0 0 20px #ccff00;
+      .section-enter {
+        opacity: 0;
+        transform: translateY(40px);
+        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
-      @keyframes loading-enhanced {
-        0%,
-        100% {
-          opacity: 0.4;
-          transform: scale(1);
-        }
-        50% {
-          opacity: 1;
-          transform: scale(1.05);
-        }
+      .section-enter.visible {
+        opacity: 1;
+        transform: translateY(0);
       }
 
-      @keyframes loading-progress {
-        0% {
-          width: 0%;
-        }
-        100% {
-          width: 100%;
-        }
+      .mobile-menu {
+        transform: translateX(100%);
+        transition: transform 0.3s ease-in-out;
       }
 
-      /* Responsive Enhancements */
-      @media (max-width: 768px) {
-        .section {
-          padding: 4rem 1rem;
-        }
-
-        .card {
-          padding: 2rem;
-        }
-
-        .social-link {
-          width: 80px;
-          height: 80px;
-          font-size: 2rem;
-        }
-
-        .hero-title {
-          font-size: clamp(2rem, 8vw, 4rem);
-        }
-
-        .neon-button,
-        .outline-button {
-          padding: 15px 30px;
-          font-size: 0.9rem;
-        }
+      .mobile-menu.open {
+        transform: translateX(0);
       }
 
-      /* Additional Visual Effects */
-      .scan-lines {
-        pointer-events: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100vh;
-        background: repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 2px,
-          rgba(204, 255, 0, 0.02) 2px,
-          rgba(204, 255, 0, 0.02) 4px
-        );
-        z-index: 1000;
-        animation: scan 2s linear infinite;
+      .menu-overlay {
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease-in-out;
       }
 
-      @keyframes scan {
-        0% {
-          transform: translateY(-100%);
-        }
-        100% {
-          transform: translateY(100vh);
-        }
+      .menu-overlay.open {
+        opacity: 1;
+        visibility: visible;
       }
     </style>
   </head>
 
-  <body>
-    <!-- Loading Screen -->
-    <div class="loading" id="loading">
-      <div class="loading-text">INITIALIZING $NOCT...</div>
-      <div class="loading-bar">
-        <div class="loading-progress"></div>
+  <body class="text-white overflow-x-hidden">
+    <!-- Background Particles -->
+    <div class="fixed inset-0 pointer-events-none">
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-40 glass-effect">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center">
+            <span class="text-2xl font-bold gradient-text font-mono"
+              >$NOCT</span
+            >
+          </div>
+
+          <!-- Desktop Menu -->
+          <div class="hidden md:block">
+            <div class="ml-10 flex items-baseline space-x-8">
+              <a
+                href="#home"
+                class="hover:text-yellow-400 transition-colors duration-300"
+                >Home</a
+              >
+              <a
+                href="#tokenomics"
+                class="hover:text-yellow-400 transition-colors duration-300"
+                >Tokenomics</a
+              >
+              <a
+                href="#roadmap"
+                class="hover:text-yellow-400 transition-colors duration-300"
+                >Roadmap</a
+              >
+              <a
+                href="#community"
+                class="hover:text-yellow-400 transition-colors duration-300"
+                >Community</a
+              >
+              <a
+                href="#buy"
+                class="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-6 py-2 rounded-full hover:shadow-lg hover:shadow-yellow-400/25 transition-all duration-300"
+                >Buy Now</a
+              >
+            </div>
+          </div>
+
+          <!-- Mobile Menu Button -->
+          <div class="md:hidden">
+            <button
+              id="mobile-menu-btn"
+              class="text-white hover:text-yellow-400 focus:outline-none z-50"
+            >
+              <i class="fas fa-bars text-xl"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div
+      id="menu-overlay"
+      class="menu-overlay fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+    >
+      <div
+        id="mobile-menu"
+        class="mobile-menu fixed right-0 top-0 h-full w-80 glass-effect p-6"
+      >
+        <div class="flex justify-between items-center mb-8">
+          <span class="text-2xl font-bold gradient-text font-mono">$NOCT</span>
+          <button id="close-menu-btn" class="text-white hover:text-yellow-400">
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+
+        <div class="space-y-6">
+          <a
+            href="#home"
+            class="block py-3 hover:text-yellow-400 transition-colors duration-300 border-b border-gray-700"
+            >Home</a
+          >
+          <a
+            href="#tokenomics"
+            class="block py-3 hover:text-yellow-400 transition-colors duration-300 border-b border-gray-700"
+            >Tokenomics</a
+          >
+          <a
+            href="#roadmap"
+            class="block py-3 hover:text-yellow-400 transition-colors duration-300 border-b border-gray-700"
+            >Roadmap</a
+          >
+          <a
+            href="#community"
+            class="block py-3 hover:text-yellow-400 transition-colors duration-300 border-b border-gray-700"
+            >Community</a
+          >
+          <a
+            href="#buy"
+            class="block mt-8 bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-6 py-3 rounded-full text-center hover:shadow-lg transition-all duration-300"
+            >Buy Now</a
+          >
+        </div>
+
+        <div class="absolute bottom-6 left-6 right-6">
+          <div class="flex justify-center space-x-6">
+            <a
+              href="#"
+              class="text-gray-400 hover:text-yellow-400 transition-colors"
+            >
+              <i class="fab fa-telegram text-xl"></i>
+            </a>
+            <a
+              href="#"
+              class="text-gray-400 hover:text-yellow-400 transition-colors"
+            >
+              <i class="fab fa-twitter text-xl"></i>
+            </a>
+            <a
+              href="#"
+              class="text-gray-400 hover:text-yellow-400 transition-colors"
+            >
+              <i class="fab fa-discord text-xl"></i>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
-
-    <!-- Scan Lines Effect -->
-    <div class="scan-lines"></div>
-
-    <!-- Scroll Progress -->
-    <div class="scroll-indicator">
-      <div class="scroll-progress" id="scrollProgress"></div>
-    </div>
-
-    <!-- Custom Cursor -->
-    <div class="cursor" id="cursor"></div>
-
-    <!-- 3D Background -->
-    <canvas id="threejs-bg"></canvas>
-
-    <!-- Animated Background -->
-    <div class="matrix-bg"></div>
 
     <!-- Hero Section -->
-    <section class="hero">
-      <h1 class="hero-title neon-text glitch" data-text="THE NIGHT HAS A TOKEN">
-        THE NIGHT HAS A TOKEN
-      </h1>
-      <p class="hero-subtitle">
-        Stealth. Community. Chaos. <span class="neon-text">$NOCT</span>
-      </p>
-      <div>
-        <a href="#buy" class="neon-button">BUY NOW ⚡</a>
-        <a href="#roadmap" class="outline-button">ROADMAP</a>
-      </div>
-    </section>
-
-    <!-- Tokenomics -->
-    <section class="section" style="background: rgba(0, 0, 0, 0.8)">
-      <h2 class="section-title neon-text">TOKENOMICS</h2>
-      <div class="grid grid-3">
-        <div class="card">
-          <div class="card-icon">
-            <i class="fas fa-coins"></i>
-          </div>
-          <h3 style="font-size: 1.4rem; margin-bottom: 0.8rem; color: #00ff88">
-            Total Supply
-          </h3>
-          <p
-            style="
-              font-size: 1.8rem;
-              font-weight: bold;
-              color: #ccff00;
-              text-shadow: 0 0 20px #ccff00;
-            "
-          >
-            400,000,000 $NOCT
-          </p>
-        </div>
-        <div class="card">
-          <div class="card-icon">
-            <i class="fas fa-fire"></i>
-          </div>
-          <h3 style="font-size: 1.4rem; margin-bottom: 0.8rem; color: #00ff88">
-            LP Burned
-          </h3>
-          <p
-            style="
-              font-size: 1.8rem;
-              font-weight: bold;
-              color: #ccff00;
-              text-shadow: 0 0 20px #ccff00;
-            "
-          >
-            100% 🔥
-          </p>
-        </div>
-        <div class="card">
-          <div class="card-icon">
-            <i class="fas fa-shield-alt"></i>
-          </div>
-          <h3 style="font-size: 1.4rem; margin-bottom: 0.8rem; color: #00ff88">
-            Tax
-          </h3>
-          <p
-            style="
-              font-size: 1.8rem;
-              font-weight: bold;
-              color: #ccff00;
-              text-shadow: 0 0 20px #ccff00;
-            "
-          >
-            0/0 ⚡
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- About -->
-    <section class="section" id="about">
-      <h2 class="section-title neon-text">ABOUT $NOCT</h2>
-      <div class="grid grid-3">
-        <div class="card">
-          <div class="card-icon">
-            <i class="fas fa-rocket"></i>
-          </div>
-          <h3 style="font-size: 1.4rem; margin-bottom: 1rem; color: #00ff88">
-            Stealth Launch
-          </h3>
-          <p style="opacity: 0.9; line-height: 1.6">
-            No presale, no team allocation. $NOCT emerged from the darkness with
-            fair distribution for all night dwellers.
-          </p>
-        </div>
-        <div class="card">
-          <div class="card-icon">
-            <i class="fas fa-users"></i>
-          </div>
-          <h3 style="font-size: 1.4rem; margin-bottom: 1rem; color: #00ff88">
-            Community Driven
-          </h3>
-          <p style="opacity: 0.9; line-height: 1.6">
-            Built by the community, for the community. Every holder shapes the
-            future of the night token ecosystem.
-          </p>
-        </div>
-        <div class="card">
-          <div class="card-icon">
-            <i class="fas fa-moon"></i>
-          </div>
-          <h3 style="font-size: 1.4rem; margin-bottom: 1rem; color: #00ff88">
-            Night Utility
-          </h3>
-          <p style="opacity: 0.9; line-height: 1.6">
-            More than a meme - $NOCT powers exclusive night-time trading
-            features and community rewards.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Roadmap -->
     <section
-      class="section"
-      id="roadmap"
-      style="background: rgba(0, 0, 0, 0.8)"
+      id="home"
+      class="min-h-screen flex items-center justify-center relative overflow-hidden pt-16"
     >
-      <h2 class="section-title neon-text">ROADMAP</h2>
-      <div style="max-width: 800px; margin: 0 auto">
-        <div class="roadmap-item">
-          <h3 style="font-size: 1.6rem; color: #ccff00; margin-bottom: 1rem">
-            Phase 1: The Awakening
-          </h3>
-          <p style="opacity: 0.9; line-height: 1.6">
-            ✅ Stealth launch on Base<br />
-            ✅ Community formation<br />
-            ✅ Initial marketing push<br />
-            ✅ DEX listings
+      <div
+        class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 via-transparent to-orange-500/5"
+      ></div>
+
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10"
+      >
+        <div class="animate-fade-in-up">
+          <h1
+            class="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight"
+          >
+            THE NIGHT HAS A
+            <span class="gradient-text block">TOKEN</span>
+          </h1>
+
+          <p
+            class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed"
+          >
+            Stealth-launched. Community-powered. Built for the shadows.
+            <br class="hidden md:block" />
+            <span class="gradient-text font-semibold">$NOCT</span> emerges from
+            the darkness.
           </p>
-        </div>
-        <div class="roadmap-item">
-          <h3 style="font-size: 1.6rem; color: #ccff00; margin-bottom: 1rem">
-            Phase 2: Rising Darkness
-          </h3>
-          <p style="opacity: 0.9; line-height: 1.6">
-            🔄 CoinGecko & CoinMarketCap listings<br />
-            🔄 Partnerships with night-themed projects<br />
-            🔄 Community contests & rewards<br />
-            🔄 Influencer collaborations
-          </p>
-        </div>
-        <div class="roadmap-item">
-          <h3 style="font-size: 1.6rem; color: #ccff00; margin-bottom: 1rem">
-            Phase 3: Night Dominance
-          </h3>
-          <p style="opacity: 0.9; line-height: 1.6">
-            ⏳ CEX listings<br />
-            ⏳ $NOCT utility features<br />
-            ⏳ NFT collection launch<br />
-            ⏳ Cross-chain expansion
-          </p>
-        </div>
-        <div class="roadmap-item">
-          <h3 style="font-size: 1.6rem; color: #ccff00; margin-bottom: 1rem">
-            Phase 4: Eternal Night
-          </h3>
-          <p style="opacity: 0.9; line-height: 1.6">
-            ⏳ DeFi ecosystem integration<br />
-            ⏳ Gaming partnerships<br />
-            ⏳ Global community expansion<br />
-            ⏳ The night becomes eternal
-          </p>
+
+          <div
+            class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
+          >
+            <a
+              href="#buy"
+              class="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-8 py-4 rounded-full font-semibold hover:shadow-xl hover:shadow-yellow-400/25 hover:scale-105 transition-all duration-300 flex items-center gap-2"
+            >
+              <i class="fas fa-bolt"></i>
+              Buy $NOCT Now
+            </a>
+            <a
+              href="#roadmap"
+              class="glass-effect px-8 py-4 rounded-full font-semibold hover:bg-white/10 transition-all duration-300 border border-white/20"
+            >
+              View Roadmap
+            </a>
+          </div>
+
+          <div
+            class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto text-center"
+          >
+            <div class="glass-effect p-4 rounded-xl">
+              <div class="text-2xl font-bold gradient-text">400M</div>
+              <div class="text-sm text-gray-400">Total Supply</div>
+            </div>
+            <div class="glass-effect p-4 rounded-xl">
+              <div class="text-2xl font-bold gradient-text">0%</div>
+              <div class="text-sm text-gray-400">Tax</div>
+            </div>
+            <div class="glass-effect p-4 rounded-xl">
+              <div class="text-2xl font-bold gradient-text">Base</div>
+              <div class="text-sm text-gray-400">Network</div>
+            </div>
+            <div class="glass-effect p-4 rounded-xl">
+              <div class="text-2xl font-bold gradient-text">Live</div>
+              <div class="text-sm text-gray-400">Status</div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- How to Buy -->
-    <section class="section" id="buy">
-      <h2 class="section-title neon-text">HOW TO BUY</h2>
-      <div class="grid grid-3">
-        <div class="card">
-          <div class="card-icon">
-            <i class="fas fa-wallet"></i>
-          </div>
-          <h3 style="font-size: 1.4rem; margin-bottom: 1rem; color: #00ff88">
-            Step 1: Get a Wallet
-          </h3>
-          <p style="opacity: 0.9; line-height: 1.6">
-            Download MetaMask or any Base-compatible wallet. Connect to Base
-            network.
+    <!-- Tokenomics Section -->
+    <section id="tokenomics" class="py-20 section-enter">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl md:text-6xl font-bold mb-6">
+            <span class="gradient-text">TOKENOMICS</span>
+          </h2>
+          <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+            Simple. Transparent. Community-focused distribution designed for
+            maximum impact.
           </p>
         </div>
-        <div class="card">
-          <div class="card-icon">
-            <i class="fas fa-ethereum"></i>
+
+        <div class="grid md:grid-cols-3 gap-8">
+          <div class="glass-effect p-8 rounded-2xl hover-lift group">
+            <div class="text-center">
+              <div
+                class="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center"
+              >
+                <i class="fas fa-coins text-2xl text-black"></i>
+              </div>
+              <h3 class="text-2xl font-bold mb-3">Total Supply</h3>
+              <p class="text-4xl font-bold gradient-text mb-2">400,000,000</p>
+              <p class="text-gray-400">$NOCT Tokens</p>
+            </div>
           </div>
-          <h3 style="font-size: 1.4rem; margin-bottom: 1rem; color: #00ff88">
-            Step 2: Get ETH
-          </h3>
-          <p style="opacity: 0.9; line-height: 1.6">
-            Bridge ETH to Base network or buy directly on Base through your
-            preferred exchange.
-          </p>
-        </div>
-        <div class="card">
-          <div class="card-icon">
-            <i class="fas fa-exchange-alt"></i>
+
+          <div class="glass-effect p-8 rounded-2xl hover-lift group">
+            <div class="text-center">
+              <div
+                class="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center"
+              >
+                <i class="fas fa-percent text-2xl text-black"></i>
+              </div>
+              <h3 class="text-2xl font-bold mb-3">Buy/Sell Tax</h3>
+              <p class="text-4xl font-bold gradient-text mb-2">0%</p>
+              <p class="text-gray-400">No Hidden Fees</p>
+            </div>
           </div>
-          <h3 style="font-size: 1.4rem; margin-bottom: 1rem; color: #00ff88">
-            Step 3: Swap for $NOCT
-          </h3>
-          <p style="opacity: 0.9; line-height: 1.6">
-            Use Uniswap or any Base DEX to swap your ETH for $NOCT. Welcome to
-            the night!
-          </p>
+
+          <div class="glass-effect p-8 rounded-2xl hover-lift group">
+            <div class="text-center">
+              <div
+                class="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center"
+              >
+                <i class="fas fa-network-wired text-2xl text-black"></i>
+              </div>
+              <h3 class="text-2xl font-bold mb-3">Blockchain</h3>
+              <p class="text-4xl font-bold gradient-text mb-2">Base</p>
+              <p class="text-gray-400">ETH Layer 2</p>
+            </div>
+          </div>
         </div>
-      </div>
-      <div style="text-align: center; margin-top: 3rem">
-        <a
-          href="#"
-          class="neon-button"
-          style="font-size: 1.2rem; padding: 20px 50px"
-        >
-          BUY ON UNISWAP 🦄
-        </a>
       </div>
     </section>
 
-    <!-- Community -->
-    <section class="section" style="background: rgba(0, 0, 0, 0.8)">
-      <h2 class="section-title neon-text">JOIN THE NIGHT</h2>
-      <div style="text-align: center; margin-bottom: 3rem">
-        <p
-          style="
-            font-size: 1.4rem;
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto;
-            line-height: 1.6;
-          "
-        >
-          The night is stronger together. Join our community of nocturnal
-          traders and meme enthusiasts.
+    <!-- Roadmap Section -->
+    <section id="roadmap" class="py-20 section-enter">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl md:text-6xl font-bold mb-6">
+            <span class="gradient-text">ROADMAP</span>
+          </h2>
+          <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+            Our journey from the shadows to the spotlight. Each phase brings us
+            closer to dominance.
+          </p>
+        </div>
+
+        <div class="relative">
+          <!-- Timeline Line -->
+          <div
+            class="absolute left-1/2 transform -translate-x-px h-full w-0.5 bg-gradient-to-b from-yellow-400 to-orange-500 hidden md:block"
+          ></div>
+
+          <div class="space-y-12">
+            <!-- Phase 1 -->
+            <div class="relative flex items-center md:justify-between">
+              <div class="w-full md:w-5/12 md:text-right">
+                <div class="glass-effect p-8 rounded-2xl hover-lift">
+                  <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-2xl font-bold gradient-text">
+                      Phase 1: Awakening
+                    </h3>
+                    <div
+                      class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center"
+                    >
+                      <i class="fas fa-check text-black"></i>
+                    </div>
+                  </div>
+                  <ul class="space-y-2 text-gray-300">
+                    <li class="flex items-center gap-2">
+                      <i class="fas fa-check text-green-400 text-sm"></i>
+                      Stealth Launch Executed
+                    </li>
+                    <li class="flex items-center gap-2">
+                      <i class="fas fa-check text-green-400 text-sm"></i>
+                      Core Community Formed
+                    </li>
+                    <li class="flex items-center gap-2">
+                      <i class="fas fa-check text-green-400 text-sm"></i>
+                      First 100 Holders Achieved
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div
+                class="hidden md:block w-4 h-4 bg-yellow-400 rounded-full absolute left-1/2 transform -translate-x-1/2"
+              ></div>
+            </div>
+
+            <!-- Phase 2 -->
+            <div class="relative flex items-center md:justify-between">
+              <div class="w-full md:w-5/12 md:ml-auto">
+                <div class="glass-effect p-8 rounded-2xl hover-lift">
+                  <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-2xl font-bold gradient-text">
+                      Phase 2: Expansion
+                    </h3>
+                    <div
+                      class="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center animate-pulse"
+                    >
+                      <i class="fas fa-clock text-black"></i>
+                    </div>
+                  </div>
+                  <ul class="space-y-2 text-gray-300">
+                    <li class="flex items-center gap-2">
+                      <i class="fas fa-circle text-yellow-400 text-xs"></i>
+                      Major DEX Listings
+                    </li>
+                    <li class="flex items-center gap-2">
+                      <i class="fas fa-circle text-yellow-400 text-xs"></i>
+                      Chart Integration & Tools
+                    </li>
+                    <li class="flex items-center gap-2">
+                      <i class="fas fa-circle text-yellow-400 text-xs"></i>
+                      Viral Meme Campaign
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div
+                class="hidden md:block w-4 h-4 bg-yellow-400 rounded-full absolute left-1/2 transform -translate-x-1/2"
+              ></div>
+            </div>
+
+            <!-- Phase 3 -->
+            <div class="relative flex items-center md:justify-between">
+              <div class="w-full md:w-5/12 md:text-right">
+                <div class="glass-effect p-8 rounded-2xl hover-lift">
+                  <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-2xl font-bold gradient-text">
+                      Phase 3: Domination
+                    </h3>
+                    <div
+                      class="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center"
+                    >
+                      <i class="fas fa-lock text-gray-400"></i>
+                    </div>
+                  </div>
+                  <ul class="space-y-2 text-gray-300">
+                    <li class="flex items-center gap-2">
+                      <i class="fas fa-circle text-gray-400 text-xs"></i>
+                      Exclusive NFT Collection
+                    </li>
+                    <li class="flex items-center gap-2">
+                      <i class="fas fa-circle text-gray-400 text-xs"></i>
+                      Physical Merchandise
+                    </li>
+                    <li class="flex items-center gap-2">
+                      <i class="fas fa-circle text-gray-400 text-xs"></i>
+                      DAO Governance Launch
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div
+                class="hidden md:block w-4 h-4 bg-gray-600 rounded-full absolute left-1/2 transform -translate-x-1/2"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Community Section -->
+    <section id="community" class="py-20 section-enter">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-4xl md:text-6xl font-bold mb-6">
+          JOIN THE <span class="gradient-text">MOVEMENT</span>
+        </h2>
+        <p class="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
+          Connect with fellow night dwellers. Share the vision. Build the future
+          together.
         </p>
+
+        <div class="grid md:grid-cols-3 gap-8 mb-12">
+          <a href="#" class="glass-effect p-8 rounded-2xl hover-lift group">
+            <div
+              class="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
+            >
+              <i class="fab fa-telegram text-2xl text-white"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Telegram</h3>
+            <p class="text-gray-400">Join our main community chat</p>
+          </a>
+
+          <a href="#" class="glass-effect p-8 rounded-2xl hover-lift group">
+            <div
+              class="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
+            >
+              <i class="fab fa-twitter text-2xl text-white"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Twitter</h3>
+            <p class="text-gray-400">Follow for updates & memes</p>
+          </a>
+
+          <a href="#" class="glass-effect p-8 rounded-2xl hover-lift group">
+            <div
+              class="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-purple-400 to-purple-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
+            >
+              <i class="fab fa-discord text-2xl text-white"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Discord</h3>
+            <p class="text-gray-400">Deep discussions & strategy</p>
+          </a>
+        </div>
       </div>
-      <div style="text-align: center">
-        <a href="#" class="social-link">
-          <i class="fab fa-telegram"></i>
-        </a>
-        <a href="#" class="social-link">
-          <i class="fab fa-twitter"></i>
-        </a>
-        <a href="#" class="social-link">
-          <i class="fab fa-discord"></i>
-        </a>
-        <a href="#" class="social-link">
-          <i class="fas fa-chart-line"></i>
-        </a>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="buy" class="py-20 section-enter">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="glass-effect p-12 rounded-3xl">
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">
+            READY TO JOIN THE <span class="gradient-text">NIGHT?</span>
+          </h2>
+          <p class="text-xl text-gray-300 mb-8">
+            The darkness calls. Answer with conviction.
+          </p>
+
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="#"
+              class="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-12 py-4 rounded-full font-bold text-lg hover:shadow-xl hover:shadow-yellow-400/25 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+            >
+              <i class="fas fa-shopping-cart"></i>
+              Buy $NOCT on Uniswap
+            </a>
+            <a
+              href="#"
+              class="glass-effect px-12 py-4 rounded-full font-bold text-lg hover:bg-white/10 transition-all duration-300 border border-white/20 flex items-center justify-center gap-2"
+            >
+              <i class="fas fa-chart-line"></i>
+              View Chart
+            </a>
+          </div>
+
+          <div class="mt-8 p-4 bg-black/30 rounded-xl">
+            <p class="font-mono text-sm text-gray-400 mb-2">
+              Contract Address:
+            </p>
+            <p class="font-mono text-yellow-400 break-all">0x1234...5678</p>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- Footer -->
-    <footer
-      style="
-        padding: 4rem 2rem;
-        text-align: center;
-        background: rgba(0, 0, 0, 0.9);
-        border-top: 1px solid rgba(204, 255, 0, 0.2);
-      "
-    >
-      <div class="neon-text" style="font-size: 2rem; margin-bottom: 2rem">
-        $NOCT
+    <footer class="py-12 border-t border-white/10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div class="mb-4 md:mb-0">
+            <span class="text-2xl font-bold gradient-text font-mono"
+              >$NOCT</span
+            >
+            <p class="text-gray-400 mt-2">We are the signal. Not the noise.</p>
+          </div>
+
+          <div class="flex space-x-6">
+            <a
+              href="#"
+              class="text-gray-400 hover:text-yellow-400 transition-colors"
+            >
+              <i class="fab fa-telegram text-xl"></i>
+            </a>
+            <a
+              href="#"
+              class="text-gray-400 hover:text-yellow-400 transition-colors"
+            >
+              <i class="fab fa-twitter text-xl"></i>
+            </a>
+            <a
+              href="#"
+              class="text-gray-400 hover:text-yellow-400 transition-colors"
+            >
+              <i class="fab fa-discord text-xl"></i>
+            </a>
+          </div>
+        </div>
+
+        <div
+          class="mt-8 pt-8 border-t border-white/10 text-center text-gray-500 text-sm"
+        >
+          <p>
+            © 2025 $NOCT. All rights reserved. Built for the community, by the
+            community.
+          </p>
+        </div>
       </div>
-      <p style="opacity: 0.7; margin-bottom: 1rem">The Night Has a Token</p>
-      <p style="opacity: 0.5; font-size: 0.9rem">
-        © 2024 $NOCT. Community-owned memecoin on Base. Not financial advice.
-      </p>
     </footer>
 
-    <!-- JavaScript -->
     <script>
-      // Loading Screen
-      window.addEventListener("load", () => {
-        setTimeout(() => {
-          document.getElementById("loading").style.opacity = "0";
-          setTimeout(() => {
-            document.getElementById("loading").style.display = "none";
-          }, 800);
-        }, 3000);
-      });
+      // Mobile menu functionality
+      const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+      const closeMenuBtn = document.getElementById("close-menu-btn");
+      const mobileMenu = document.getElementById("mobile-menu");
+      const menuOverlay = document.getElementById("menu-overlay");
 
-      // Enhanced Custom Cursor
-      const cursor = document.getElementById("cursor");
-      const trails = [];
-      const trailCount = 8;
-
-      // Create cursor trails
-      for (let i = 0; i < trailCount; i++) {
-        const trail = document.createElement("div");
-        trail.className = "cursor-trail";
-        document.body.appendChild(trail);
-        trails.push({
-          element: trail,
-          x: 0,
-          y: 0,
-          vx: 0,
-          vy: 0,
-        });
+      function openMenu() {
+        mobileMenu.classList.add("open");
+        menuOverlay.classList.add("open");
+        document.body.style.overflow = "hidden";
       }
 
-      let mouseX = 0,
-        mouseY = 0;
-
-      document.addEventListener("mousemove", (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-
-        cursor.style.left = mouseX - 15 + "px";
-        cursor.style.top = mouseY - 15 + "px";
-      });
-
-      // Animate cursor trails
-      function animateTrails() {
-        trails.forEach((trail, index) => {
-          const delay = (index + 1) * 50;
-          trail.vx += (mouseX - trail.x) * 0.1;
-          trail.vy += (mouseY - trail.y) * 0.1;
-          trail.vx *= 0.8;
-          trail.vy *= 0.8;
-          trail.x += trail.vx;
-          trail.y += trail.vy;
-
-          trail.element.style.left = trail.x - 4 + "px";
-          trail.element.style.top = trail.y - 4 + "px";
-          trail.element.style.opacity = (1 - index / trailCount) * 0.6;
-        });
-        requestAnimationFrame(animateTrails);
+      function closeMenu() {
+        mobileMenu.classList.remove("open");
+        menuOverlay.classList.remove("open");
+        document.body.style.overflow = "";
       }
-      animateTrails();
 
-      // Cursor hover effects
-      document.querySelectorAll("a, button, .card").forEach((element) => {
-        element.addEventListener("mouseenter", () => {
-          cursor.style.transform = "scale(2)";
-          cursor.style.background =
-            "radial-gradient(circle, #00ff88 0%, #ccff00 50%, transparent 70%)";
-        });
-
-        element.addEventListener("mouseleave", () => {
-          cursor.style.transform = "scale(1)";
-          cursor.style.background =
-            "radial-gradient(circle, #ccff00 0%, #00ff88 50%, transparent 70%)";
-        });
+      mobileMenuBtn.addEventListener("click", openMenu);
+      closeMenuBtn.addEventListener("click", closeMenu);
+      menuOverlay.addEventListener("click", (e) => {
+        if (e.target === menuOverlay) {
+          closeMenu();
+        }
       });
 
-      // Scroll Progress
-      window.addEventListener("scroll", () => {
-        const scrollProgress = document.getElementById("scrollProgress");
-        const scrollTop = window.pageYOffset;
-        const docHeight = document.body.offsetHeight - window.innerHeight;
-        const scrollPercent = (scrollTop / docHeight) * 100;
-        scrollProgress.style.width = scrollPercent + "%";
-      });
-
-      // Three.js Background
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(
-        75,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        1000
+      // Close menu when clicking on mobile menu links
+      const mobileMenuLinks = document.querySelectorAll(
+        '#mobile-menu a[href^="#"]'
       );
-      const renderer = new THREE.WebGLRenderer({
-        canvas: document.getElementById("threejs-bg"),
-        alpha: true,
-        antialias: true,
+      mobileMenuLinks.forEach((link) => {
+        link.addEventListener("click", closeMenu);
       });
 
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setClearColor(0x000000, 0);
-
-      // Create floating geometric shapes
-      const geometries = [
-        new THREE.TetrahedronGeometry(1, 0),
-        new THREE.OctahedronGeometry(1, 0),
-        new THREE.IcosahedronGeometry(1, 0),
-      ];
-
-      const materials = [
-        new THREE.MeshBasicMaterial({
-          color: 0xccff00,
-          wireframe: true,
-          transparent: true,
-          opacity: 0.3,
-        }),
-        new THREE.MeshBasicMaterial({
-          color: 0x00ff88,
-          wireframe: true,
-          transparent: true,
-          opacity: 0.2,
-        }),
-      ];
-
-      const shapes = [];
-      for (let i = 0; i < 20; i++) {
-        const geometry =
-          geometries[Math.floor(Math.random() * geometries.length)];
-        const material =
-          materials[Math.floor(Math.random() * materials.length)];
-        const mesh = new THREE.Mesh(geometry, material);
-
-        mesh.position.x = (Math.random() - 0.5) * 50;
-        mesh.position.y = (Math.random() - 0.5) * 50;
-        mesh.position.z = (Math.random() - 0.5) * 50;
-
-        mesh.rotation.x = Math.random() * Math.PI;
-        mesh.rotation.y = Math.random() * Math.PI;
-
-        mesh.scale.setScalar(Math.random() * 2 + 0.5);
-
-        scene.add(mesh);
-        shapes.push({
-          mesh: mesh,
-          rotationSpeed: {
-            x: (Math.random() - 0.5) * 0.02,
-            y: (Math.random() - 0.5) * 0.02,
-            z: (Math.random() - 0.5) * 0.02,
-          },
-          floatSpeed: Math.random() * 0.01 + 0.005,
-        });
-      }
-
-      camera.position.z = 30;
-
-      let time = 0;
-      function animate() {
-        requestAnimationFrame(animate);
-        time += 0.01;
-
-        shapes.forEach((shape, index) => {
-          shape.mesh.rotation.x += shape.rotationSpeed.x;
-          shape.mesh.rotation.y += shape.rotationSpeed.y;
-          shape.mesh.rotation.z += shape.rotationSpeed.z;
-
-          shape.mesh.position.y += Math.sin(time + index) * shape.floatSpeed;
-          shape.mesh.position.x +=
-            Math.cos(time + index * 0.5) * shape.floatSpeed * 0.5;
-        });
-
-        renderer.render(scene, camera);
-      }
-      animate();
-
-      // Handle window resize
-      window.addEventListener("resize", () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      });
-
-      // Floating Particles
-      function createParticle() {
-        const particle = document.createElement("div");
-        particle.className = "particle";
-        particle.style.left = Math.random() * 100 + "vw";
-        particle.style.width = Math.random() * 8 + 4 + "px";
-        particle.style.height = particle.style.width;
-        particle.style.animationDuration = Math.random() * 6 + 6 + "s";
-        particle.style.animationDelay = Math.random() * 2 + "s";
-
-        document.body.appendChild(particle);
-
-        setTimeout(() => {
-          particle.remove();
-        }, 12000);
-      }
-
-      // Create particles continuously
-      setInterval(createParticle, 2000);
-
-      // Smooth scrolling for anchor links
-      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-        anchor.addEventListener("click", function (e) {
-          e.preventDefault();
-          const target = document.querySelector(this.getAttribute("href"));
-          if (target) {
-            target.scrollIntoView({
-              behavior: "smooth",
-              block: "start",
-            });
-          }
-        });
-      });
-
-      // Enhanced scroll animations
+      // Intersection Observer for animations
       const observerOptions = {
         threshold: 0.1,
         rootMargin: "0px 0px -50px 0px",
@@ -1380,52 +708,40 @@
       const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.style.opacity = "1";
-            entry.target.style.transform = "translateY(0)";
+            entry.target.classList.add("visible");
           }
         });
       }, observerOptions);
 
-      // Observe elements for scroll animations
-      document
-        .querySelectorAll(".card, .roadmap-item, .section-title")
-        .forEach((el) => {
-          el.style.opacity = "0";
-          el.style.transform = "translateY(30px)";
-          el.style.transition = "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
-          observer.observe(el);
-        });
+      // Observe all section-enter elements
+      document.querySelectorAll(".section-enter").forEach((el) => {
+        observer.observe(el);
+      });
 
-      // Add dynamic glow effect to elements
-      document
-        .querySelectorAll(".neon-text, .neon-button")
-        .forEach((element) => {
-          element.addEventListener("mouseenter", () => {
-            element.style.filter =
-              "brightness(1.3) contrast(1.2) saturate(1.4)";
-          });
-
-          element.addEventListener("mouseleave", () => {
-            element.style.filter =
-              "brightness(1.2) contrast(1.3) saturate(1.2)";
-          });
-        });
-
-      // Add typing effect to hero subtitle
-      const subtitle = document.querySelector(".hero-subtitle");
-      const text = subtitle.textContent;
-      subtitle.textContent = "";
-
-      setTimeout(() => {
-        let i = 0;
-        const typeEffect = setInterval(() => {
-          subtitle.textContent += text.charAt(i);
-          i++;
-          if (i >= text.length) {
-            clearInterval(typeEffect);
+      // Smooth scrolling for navigation links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            const offsetTop = target.offsetTop - 80;
+            window.scrollTo({
+              top: offsetTop,
+              behavior: "smooth",
+            });
           }
-        }, 100);
-      }, 4000);
+        });
+      });
+
+      // Add scroll effect to navigation
+      window.addEventListener("scroll", () => {
+        const nav = document.querySelector("nav");
+        if (window.scrollY > 50) {
+          nav.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
+        } else {
+          nav.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
+        }
+      });
     </script>
   </body>
 </html>
